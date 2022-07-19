@@ -3,6 +3,8 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import time
 
+stupidVar = "ESTUUUPIDOOOO"
+
 # Creating a webdriver instance
 PATH = "C:\Program Files (x86)\chromedriver.exe"
 driver = webdriver.Chrome(PATH)
