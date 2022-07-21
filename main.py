@@ -1,5 +1,6 @@
 from pip import main
 from selenium import webdriver
+from selenium.common import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -12,6 +13,8 @@ import bs4findpath
 import time
 
 
+
+
 # waiting helper functions
 def wait(s):
     time.sleep(s)
@@ -20,6 +23,8 @@ def wait(s):
 def wait_then_close(driver_arg, s):
     time.sleep(s)
     driver_arg.close()
+
+
 
 
 # log in function definition
@@ -40,33 +45,48 @@ def linkedin_log_in(driver_p, email, pswd):
     driver_p.find_element(By.XPATH, "//button[@type='submit']").click()
 
 
+
+
 def search_people(driver_p, keywords):
+
+    # input in the search bar and enter
     search_bar_element = driver_p.find_element(By.CLASS_NAME, "search-global-typeahead__input")
     search_bar_element.send_keys(keywords)
     search_bar_element.send_keys(Keys.RETURN)
-    wait(4)
-    peopleButton = driver_p.find_element(By.XPATH, "//button[text()='People']")
+
+    #click on "people" filter
+    try:
+        peopleButton = WebDriverWait(driver_p, 5).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[text()='People']"))
+        )
+    except TimeoutException:
+        driver_p.refresh()
+        peopleButton = WebDriverWait(driver_p, 5).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[text()='People']"))
+        )
     peopleButton.click()
 
-    wait(3)
-    driver_p.execute_script("window.scrollTo(0,  document.body.scrollHeight);")
-    wait(3)
-
-    element = WebDriverWait(driver_p, 10).until(
-        EC.element_to_be_clickable((By.CLASS_NAME, "artdeco-pagination__button--next"))
-    )
-    element.click()
-    x=2
 
 
 
 
-    
 
 def get_people_links_page(driver_p, links_list):
-    doc = BeautifulSoup(main_driver.page_source, "html.parser")
-    ul_element = doc.find("ul",class_="reusable-search__entity-result-list")
-    profiles_li_elements = ul_element.find_all("li")
+
+    while True:
+        try:
+            doc = BeautifulSoup(driver_p.page_source, "html.parser")
+            ul_element = doc.find("ul",class_="reusable-search__entity-result-list")
+            profiles_li_elements = ul_element.find_all("li")
+
+        except AttributeError:
+            wait(2)
+            driver_p.refresh()
+            print("asbaaaaaaaaaaaaaaaaaa")
+            wait(5)
+            continue
+        else:
+            break
 
     for li in profiles_li_elements:
         if li.find("span", class_="artdeco-button__text") is not None:
@@ -76,27 +96,30 @@ def get_people_links_page(driver_p, links_list):
     print()
     print(len(links_list))
 
-    print(doc.prettify())
 
-    next_button_element = doc.find("button", class_="artdeco-pagination__button--next")
 
-    next_button_element_xpath = bs4findpath.xpath_soup(next_button_element)
-    main_driver.find_element_by_xpath(next_button_element_xpath).click()
+def click_next(driver_p):
+    driver_p.execute_script("window.scrollTo(0,  document.body.scrollHeight);")
+    element = WebDriverWait(driver_p, 5).until(
+        EC.element_to_be_clickable((By.CLASS_NAME, "artdeco-pagination__button--next"))
+    )
+    element.click()
+
 
 
 def get_people_links_all(driver_p):
-    all_links = []
-    get_people_links_page(main_driver, all_links)
-    wait(4)
-    doc = BeautifulSoup(main_driver.page_source, "html.parser")
-    print()
-    print(doc.prettify())
-    print()
-    next_button_element = doc.find("button", class_="artdeco-pagination__button--next")
-    next_button_element_xpath = bs4findpath.xpath_soup(next_button_element)
-    main_driver.find_element_by_xpath(next_button_element_xpath).click()
 
-    get_people_links_page(main_driver, all_links)
+    all_links =[]
+
+    for i in range(100):
+        get_people_links_page(driver_p, all_links)
+        wait(1)
+        if i < 99:
+            click_next(driver_p)
+        wait(2)
+
+    print(f"finally, the total length of the list is {len(all_links)}")
+    return all_links
 
 
 # ********************************  CONSTANT VARIABLES  ********************************
@@ -118,19 +141,27 @@ email = "m_regimbald@hotmail.com"
 pswd = "Regma1182!"
 linkedin_log_in(main_driver, email, pswd)
 
-search_people(main_driver, "developer")
+search_people(main_driver, "journalist")
 
 wait(3)
 
 
 
-# returns a list of urls found in a single pageof the profile to scrap
-# 
 
 # scrape all profile results in a single page, next page, scrape, next page, scrape, etc (untill there are no more pages)
-get_people_links_all(main_driver)
+all_links_list = get_people_links_all(main_driver)
 
 # wait_then_close(main_driver,5)
+
+
+
+
+
+
+
+
+
+
 
 
 # *****************  Output  ***************
