@@ -272,5 +272,22 @@ else:
 # *****************  Output  ***************
 # ***********************************************
 
-# person = {"name": "", "link":"" , "location": "" , "bio": "", "description_keywords":[],  }
+person = {"link":"", 
+          "name": "",
+          "title": "",
+          "location": "" , 
+          "about": "", 
+          "is_looking_for_job": True, #toDev
+          "experience":{"company1": "job1","company2": "job2"},
+          "education":{"school1": "degree1"},
+          "Skills":{"webDev":6,"html":8, "CSS": 7},
+          "high_endorsement": True, #toDev (if person has endorsements from big companies or have more than 20(or n ) endorsements, set to True )
+          "Projects": 4, #mention only the number of projects
+          "languages":[],
+          "volunteering": "", #??????
+          "Courses": [] #???????
+
+          }
+
+get_ranking
 # output =[]
