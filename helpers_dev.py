@@ -5,7 +5,6 @@ def get_second_part_url(s, max_pages):
     # gets a str like "2&sid=Mqu" as input. (the second part of a url)
     # returns "3&sid=Mqu" if max_pages >= 3 else return None because there is no url that has "3&sid=Mqu"
     
-    
     n_str=""
     for character in s:
         if character.isdigit():
@@ -29,6 +28,13 @@ def get_next_url(old_url, max_pages):
     else:
         return None
     
-    
+def get_first_n(s):
+    n_str=""
+    for character in s:
+        if character.isdigit():
+            n_str += character
+        else:
+            break
+    return int(n_str)
     
     
