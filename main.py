@@ -114,7 +114,7 @@ def search_people(driver_p, keywords):
     search_bar_element.send_keys(Keys.RETURN)
 
     # click on "people" filter
-    peopleButton = WebDriverWait(driver_p, 5).until(
+    peopleButton = WebDriverWait(driver_p, 10).until(
         EC.element_to_be_clickable((By.XPATH, "//button[text()='People']"))
     )
     peopleButton.click()
@@ -292,9 +292,12 @@ def scrape_profile(driver_p, url):
         " ").strip('\n')
     person["location"] = location
 
+
     # GET THE REST THE OTHER SECTIONS
     main_element = doc.find("main", id="main")
     section_elements = main_element.find_all("section", class_="artdeco-card ember-view relative break-words pb3 mt2")
+
+    print(f"scraping {name}'s profile")
 
     for section in section_elements:
 
@@ -465,7 +468,6 @@ def scrape_profile(driver_p, url):
                 driver_p.back()
                 wait(1)
 
-            print("hi")
 
 
         elif section.div['id'] == "courses":
@@ -551,42 +553,56 @@ url_kim = "https://www.linkedin.com/in/kim-fontaine-skronski-a458806a/"
 # journalist IRAQ USA -> 2 pages
 # developer python psychology Canada -> 19 pages
 # developer python psychology mexico -> 5 pages
-# search_results = search_people(main_driver, "journalist IRAQ USA")
+
+# Search for people given a string of keywords. the function returns a list of profiles urls
+# #that can be scraped later on
+search_results = search_people(main_driver, "analytique des donnees")
 
 
-# if search_results:
-#     final_list = get_people_links_all(main_driver)
-#     print(final_list)
-#     print(f"finally, the total length of the list is {len(final_list)}")
-# else:
-#     final_list= []
-#     print("No results found for your search. Try other keywords.")
+if search_results:
+    final_list = get_people_links_all(main_driver)
+    print(final_list)
+    print(f"finally, the total length of the list is {len(final_list)}")
+else:
+    final_list= []
+    print("No results found for your search. Try other keywords.")
 
-final_list_orgnl = [
-    'https://www.linkedin.com/in/kelly-kennedy-5072303?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAACRPdcBTv_Zujs7InZUwnveaJvDpAY_Ayk',
-    'https://www.linkedin.com/in/ingrid-lund-7585ba?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAAWvrQBWWaN5AQYWuwTvYVb_XKUIYETtoI',
-    'https://www.linkedin.com/in/viviansalama?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAKeYDEBOhJKYRFcGPvW8eMBnKPSEAfjaUs',
-    'https://www.linkedin.com/in/david-ruiz-de-la-torre-1ab05b48?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAn5YFMB6u91Dl9JBR5JlCQa0hmR8HfjKLM',
-    'https://www.linkedin.com/in/%D8%AE%D8%A7%D9%84%D8%AF-%D8%A7%D9%84%D9%86%D8%AC%D8%A7%D8%B1-khilednajar-8a554263?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAA1tgn0BF2Xd0OzJ-LzXcD89-nd7-3sgl-A',
-    'https://www.linkedin.com/in/aaronglantz?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAABYPhUBhun4yrzM_oR1XUBxSuW0awxycYI',
-    'https://www.linkedin.com/in/marine-olivesi-471539b?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAIJXlUBwHzaLzUrSo1x5U_M90h0QrGA1Nc',
-    'https://www.linkedin.com/in/boushra-mahfoud-62077697?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAABSUpvgB72_yc7nubQ_YDGvcEAxvFjhtkOM',
-    'https://www.linkedin.com/in/ryanhudziak?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAGQvXABLjaSLmmBp6KYHsTnYdKC3HiuNeU',
-    'https://www.linkedin.com/in/hughan?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAHXXacB17-BonhGV3l_aamrY7GceK148Xc',
-    'https://www.linkedin.com/in/denis-chaudr%C3%A9-6b1b2522?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAATLK6UB28-r47kMXbMruGbnWHqzujuqfnk',
-    'https://www.linkedin.com/in/arfan-majeed-2a3b6674?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAA_VVBsB-jQGHAcD5HJmDZRXGLwGmuXcZNM',
-    'https://www.linkedin.com/in/kareem-botane-5b60b1214?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAADYehRoBZgzrt1yvzZYgLxADaKnScvN-2aw']
-final_list = [
-    'https://www.linkedin.com/in/boushra-mahfoud-62077697?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAABSUpvgB72_yc7nubQ_YDGvcEAxvFjhtkOM',
-    'https://www.linkedin.com/in/ryanhudziak?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAGQvXABLjaSLmmBp6KYHsTnYdKC3HiuNeU',
-    ]
+# an example of search_list output
+# final_list = [
+#     'https://www.linkedin.com/in/kelly-kennedy-5072303?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAACRPdcBTv_Zujs7InZUwnveaJvDpAY_Ayk',
+#     'https://www.linkedin.com/in/ingrid-lund-7585ba?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAAWvrQBWWaN5AQYWuwTvYVb_XKUIYETtoI',
+#     'https://www.linkedin.com/in/viviansalama?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAKeYDEBOhJKYRFcGPvW8eMBnKPSEAfjaUs',
+#     'https://www.linkedin.com/in/david-ruiz-de-la-torre-1ab05b48?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAn5YFMB6u91Dl9JBR5JlCQa0hmR8HfjKLM',
+#     'https://www.linkedin.com/in/%D8%AE%D8%A7%D9%84%D8%AF-%D8%A7%D9%84%D9%86%D8%AC%D8%A7%D8%B1-khilednajar-8a554263?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAA1tgn0BF2Xd0OzJ-LzXcD89-nd7-3sgl-A',
+#     'https://www.linkedin.com/in/aaronglantz?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAABYPhUBhun4yrzM_oR1XUBxSuW0awxycYI',
+#     'https://www.linkedin.com/in/marine-olivesi-471539b?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAIJXlUBwHzaLzUrSo1x5U_M90h0QrGA1Nc',
+#     'https://www.linkedin.com/in/boushra-mahfoud-62077697?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAABSUpvgB72_yc7nubQ_YDGvcEAxvFjhtkOM',
+#     'https://www.linkedin.com/in/ryanhudziak?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAGQvXABLjaSLmmBp6KYHsTnYdKC3HiuNeU',
+#     'https://www.linkedin.com/in/hughan?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAHXXacB17-BonhGV3l_aamrY7GceK148Xc',
+#     'https://www.linkedin.com/in/denis-chaudr%C3%A9-6b1b2522?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAATLK6UB28-r47kMXbMruGbnWHqzujuqfnk',
+#     'https://www.linkedin.com/in/arfan-majeed-2a3b6674?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAA_VVBsB-jQGHAcD5HJmDZRXGLwGmuXcZNM',
+#     'https://www.linkedin.com/in/kareem-botane-5b60b1214?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAADYehRoBZgzrt1yvzZYgLxADaKnScvN-2aw']
 
+
+# final_list = [
+#     'https://www.linkedin.com/in/boushra-mahfoud-62077697?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAABSUpvgB72_yc7nubQ_YDGvcEAxvFjhtkOM',
+#     'https://www.linkedin.com/in/ryanhudziak?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAAAGQvXABLjaSLmmBp6KYHsTnYdKC3HiuNeU',
+#     ]
+
+#the final list that will contain the dictionaries corresponding to people's information
 output_list = []
 
 if final_list:
     for profile_url in final_list:
-        output_list.append(scrape_profile(main_driver, profile_url))
+        try:
+            output_list.append(scrape_profile(main_driver, profile_url))
 
+        # the function scrape_profile contains some bugs while scraping a given profile.
+        # if a bug was to be found, continue the loop and scrape the next profile in the list
+        except AttributeError:
+            continue
+
+# Converting the list of dictionaries into a json file
 text_file = open("sample.txt", "w")
 output_json_str = json.dumps(output_list)
 text_file.write(output_json_str)
